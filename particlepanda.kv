@@ -1,0 +1,349 @@
+#:kivy 1.9.0
+
+TestGame:
+
+<TestGame>:
+	gameworld: gameworld
+    GameWorld:
+        id: gameworld
+        gamescreenmanager: gamescreenmanager
+        size_of_gameworld: 100*1024
+        size_of_entity_block: 128
+        system_count: 12
+        zones: {'general': 10000}
+        PositionSystem2D:
+            system_id: 'position'
+            gameworld: gameworld
+            zones: ['general']
+            size_of_component_block: 128
+        RotateSystem2D:
+            gameworld: gameworld
+            zones: ['general']
+        ScaleSystem2D:
+            gameworld: gameworld
+            zones: ['general']
+        ColorSystem:
+            gameworld: gameworld
+            zones: ['general']
+        ParticleSystem:
+            id: particles
+            gameworld: gameworld
+            zones: ['general']
+            particle_zone: 'general'
+        ParticlesRenderer:
+            gameworld: gameworld
+            zones: ['general']
+            shader_source: 'assets/glsl/positionrotatecolorscale.glsl'
+            frame_count: 3
+            updateable: True
+        EmitterSystem:
+            id: emitter
+            gameworld: gameworld
+            zones: ['general']
+            particle_system: particles.__self__
+        Renderer:
+            zones: ['general']
+            gameworld: gameworld
+            shader_source: 'assets/glsl/positionshader.glsl'
+            frame_count: 3
+            updateable: True
+    GameScreenManager:
+        id: gamescreenmanager
+        size: root.size
+        pos: root.pos
+        gameworld: gameworld
+        GameScreen:
+        	name: 'main'
+            GamePanel:
+                id: game_panel
+                size_hint: (.5, 1.0)
+                pos_hint: {'x': 0., 'y': 0.}
+                root: root
+            TouchConsumingStackLayout:
+                orientation: 'lr-tb'
+                size_hint: (.25, .1)
+                pos_hint: {'x': 0.015, 'y': .025}
+                padding: dp(10)
+                spacing: dp(10)
+                canvas:
+                    Color:
+                        rgba: app.get_color(['Cyan', '800'])[0:3] + [.5]
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                FlatButton:
+                    text: 'Pick Texture'
+                    size_hint: (.4, 1.0)
+                    on_release: root.open_texture_choice_popup()
+                    font_ramp_tuple: ('texture_button', '1')
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    theme: ('pp', 'variant_2')
+                    alpha: .5
+                FlatButton:
+                    text: 'Save Effect'
+                    size_hint: (.3, 1.0)
+                    on_release: root.open_save_popup()
+                    font_ramp_tuple: ('save_button', '1')
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    theme: ('pp', 'variant_2')
+                    alpha: .5
+                FlatButton:
+                    text: 'Load Effect'
+                    size_hint: (.3, 1.0)
+                    on_release: root.open_load_popup()
+                    font_ramp_tuple: ('load_button', '1')
+                    text_size: self.size
+                    valign: 'middle'
+                    halign: 'center'
+                    theme: ('pp', 'variant_2')
+                    alpha: .5
+            EditorPanel:
+                id: editor_panel
+                size_hint: (.5, .95)
+                pos_hint: {'x': .475, 'y': .025}
+
+
+<EditorScreen>:
+    ScrollView:
+        size_hint: (1.0, 1.0)
+        scroll_timeout: 100
+        pos_hint: {'x': 0., 'y': 0.}
+        scroll_distance: self.height * .075
+        canvas.before:
+            StencilPush:
+            Rectangle:
+                size: self.size
+                pos: self.pos
+            StencilUse:
+        canvas.after:
+            StencilUnUse:
+            Rectangle:
+                size: self.size
+                pos: self.pos
+            StencilPop:
+        StackLayout:
+            id: panel_layout
+            size_hint: (1.0, None)
+            spacing: dp(10)
+            padding: dp(10)
+            height: self.minimum_height
+
+
+<SavePopupContent>:
+    orientation: 'vertical'
+    Widget:
+        size_hint: (1.0, None)
+        height: root.height*.1 - text_input.height
+    FlatTextInput:
+        id: text_input
+        hint_text: 'Input effect name.'
+        size_hint: (1.0, None)
+        height: self.minimum_height
+        background_color: (0., 0., 0., 0.)
+        cursor_color: (1., 1., 1., 1.)
+        foreground_color: (1., 1., 1., 1.)
+        input_filter: root.filter_input
+    Widget:
+        size_hint: (1.0, .7)
+    FlatButton:
+        text: 'Save'
+        size_hint: (1.0, .2)
+        theme: ('pp', 'variant_2')
+        font_ramp_tuple: ('save_effect_button', '1')
+        on_release: root.save_callback(root)
+
+
+<CustomPopup>:
+    popup_color: app.get_color(['Cyan', '800'])[0:3] + [.5]
+    size_hint: (.6, .8)
+
+
+<ScrolledPopupContent>:
+    scroll_timeout: 100
+    scroll_distance: self.height * .075
+    StackLayout:
+        id: content_layout
+        size_hint: (1.0, None)
+        spacing: dp(10)
+        padding: dp(10)
+        height: self.minimum_height
+
+
+<EditorPanel>:
+    canvas.before:
+        Color:
+            rgba: app.get_color(['Cyan', '800'])[0:3] + [.5]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {'y': .92, 'x': 0.}
+        size_hint: (1., .08)
+        id: screen_toggles
+    ScreenManager:
+        id: sm
+        size_hint: (1., .92)
+        pos_hint: {'x': 0., 'y': 0.}
+
+
+<TextureChoiceButton>:
+    orientation: 'horizontal'
+    size_hint: 1., None
+    height: dp(50)
+    Image:
+        texture: root.texture
+        size_hint: (.2, 1.0)
+    FlatLabel:
+        text: root.texture_name
+        size_hint: (.8, 1.0)
+        font_ramp_tuple: (root.font_group_id, '1')
+        text_size: self.size
+        valign: 'middle'
+        halign: 'left'
+        shorten: True
+
+<EffectChoiceButton>:
+    orientation: 'horizontal'
+    size_hint: 1., None
+    height: dp(50)
+    FlatLabel:
+        text: root.choice_name
+        size_hint: (1.0, 1.0)
+        font_ramp_tuple: (root.font_group_id, '1')
+        text_size: self.size
+        valign: 'middle'
+        halign: 'left'
+        shorten: True
+    
+
+<SliderGroup>:
+    padding: [dp(5), dp(5), dp(5), dp(5)]
+    app_root: app.root
+    canvas.before:
+        Color:
+            rgba: app.get_color(['Cyan', '300'])[0:3] + [.5]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FlatLabel:
+        text: str(root.group_name)
+        size_hint: (1.0, None)
+        theme: ('pp', 'titles')
+        height: dp(30)
+        font_ramp_tuple: (root.font_group_id + '_group_name', '1')
+        text_size: self.size
+        valign: 'middle'
+        halign: 'left'
+        shorten: True
+    StackLayout:
+        height: self.minimum_height
+        size_hint: (1., None)
+        id: slider_layout
+
+
+<ToggleGroup>:
+    padding: [dp(5), dp(5), dp(5), dp(5)]
+    app_root: app.root
+    height: dp(90)
+    size_hint: (1., None)
+    canvas.before:
+        Color:
+            rgba: app.get_color(['Cyan', '300'])[0:3] + [.5]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FlatLabel:
+        text: str(root.group_name)
+        size_hint: (1.0, None)
+        height: dp(30)
+        font_ramp_tuple: (root.font_group_id + '_group_name', '1')
+        text_size: self.size
+        valign: 'middle'
+        halign: 'left'
+        shorten: True
+        theme: ('pp', 'titles')
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1., None)
+        height: dp(50)
+        padding: dp(5)
+        spacing: dp(5)
+        id: toggle_layout
+
+
+<OptionToggle>:
+    theme: ('pp', 'values')
+
+
+<ScreenToggleButton>:
+    theme: ('pp', 'variant_2')
+    opacity: .5
+
+
+<NamedValueSlider>:
+    orientation: 'horizontal'
+    current_value: value_slider.current_value
+    FlatLabel:
+        text: str(root.slider_name)
+        size_hint: (.2, 1.0)
+        font_ramp_tuple: (root.font_group_id + '_name', '1') if root.font_group_id != 'default' else ('default', '1')
+        text_size: self.size
+        theme: ('pp', 'subtitles')
+        valign: 'top'
+        halign: 'center'
+        shorten: True
+    SliderWithValues:
+        id: value_slider
+        minimum: root.minimum
+        maximum: root.maximum
+        step: root.step
+        font_group_id: root.font_group_id + '_slider' if root.font_group_id != 'default' else 'default'
+        size_hint: (.8, 1.0)
+
+
+<SliderWithValues>:
+    spacing: dp(5)
+    current_value: slider.value
+    FlatButton:
+        text: str(root.minimum)
+        size_hint: (.1, 1.0)
+        font_ramp_tuple: (root.font_group_id, '1')
+        text_size: self.size
+        valign: 'middle'
+        halign: 'center'
+        theme: ('pp', 'values')
+        max_lines: 1
+        alpha: 0.
+        on_release: root.decrement_slider()
+    FlatSlider:
+        id: slider
+        size_hint: (.5, 1.0)
+        range: (root.minimum, root.maximum)
+        step: root.step
+        theme: ('pp', 'values')
+    FlatButton:
+        text: str(root.maximum)
+        size_hint: (.1, 1.0)
+        font_ramp_tuple: (root.font_group_id, '1')
+        text_size: self.size
+        valign: 'middle'
+        theme: ('pp', 'values')
+        halign: 'center'
+        max_lines: 1
+        alpha: 0.
+        on_release: root.increment_slider()
+    FlatLabel:
+        id: value_display
+        text: str(root.current_value)
+        size_hint: (.2, 1.0)
+        font_ramp_tuple: (root.font_group_id, '1')
+        text_size: self.size
+        valign: 'middle'
+        theme: ('pp', 'values')
+        halign: 'center'
+        max_lines: 1
