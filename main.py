@@ -275,7 +275,7 @@ class TestGame(Widget):
     def __init__(self, **kwargs):
         super(TestGame, self).__init__(**kwargs)
         self.gameworld.init_gameworld(['position', 'scale', 'rotate',
-            'color', 'particles', 'emitters', 'particles_renderer', 'renderer'],
+            'color', 'particles', 'emitters', 'particle_renderer', 'renderer'],
             callback=self.init_game)
         self.emitter = None
         self.popup = None
