@@ -7,7 +7,7 @@ TestGame:
     GameWorld:
         id: gameworld
         gamescreenmanager: gamescreenmanager
-        size_of_gameworld: 100*1024
+        size_of_gameworld: 65*1024
         size_of_entity_block: 128
         system_count: 12
         zones: {'general': 10000}
@@ -35,18 +35,13 @@ TestGame:
             zones: ['general']
             shader_source: 'assets/glsl/positionrotatecolorscale.glsl'
             frame_count: 3
+            max_batches: 10
             updateable: True
         EmitterSystem:
             id: emitter
             gameworld: gameworld
             zones: ['general']
             particle_system: particles.__self__
-        Renderer:
-            zones: ['general']
-            gameworld: gameworld
-            shader_source: 'assets/glsl/positionshader.glsl'
-            frame_count: 3
-            updateable: True
     GameScreenManager:
         id: gamescreenmanager
         size: root.size
