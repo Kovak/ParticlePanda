@@ -58,8 +58,8 @@ TestGame:
                 orientation: 'lr-tb'
                 size_hint: (.25, .1)
                 pos_hint: {'x': 0.015, 'y': .025}
-                padding: dp(10)
-                spacing: dp(10)
+                padding: dp(4)
+                spacing: dp(4)
                 canvas:
                     Color:
                         rgba: app.get_color(['Cyan', '800'])[0:3] + [.5]
@@ -68,7 +68,7 @@ TestGame:
                         pos: self.pos
                 FlatButton:
                     text: 'Pick Texture'
-                    size_hint: (.4, 1.0)
+                    size_hint: (.3999, 1.0)
                     on_release: root.open_texture_choice_popup()
                     font_ramp_tuple: ('texture_button', '1')
                     text_size: self.size

@@ -12,14 +12,16 @@ import kivent_particles
 from os import walk
 from os.path import join, dirname, split, splitext
 from kivent_core.managers.resource_managers import texture_manager
-from flat_kivy import FlatApp
-from flat_kivy.ui_elements import (TouchRippleBehavior, GrabBehavior, 
+from flat_kivy.flatapp import FlatApp
+from flat_kivy.uix.behaviors import (TouchRippleBehavior, GrabBehavior, 
     ButtonBehavior)
 from kivy.properties import (NumericProperty, StringProperty, DictProperty, 
     ObjectProperty, ListProperty)
 from flat_kivy.font_definitions import style_manager
 from kivy.metrics import dp, sp
-from flat_kivy.ui_elements import FlatToggleButton, FlatPopup, FlatLabel
+from flat_kivy.uix.flattogglebutton import FlatToggleButton
+from flat_kivy.uix.flatpopup import FlatPopup
+from flat_kivy.uix.flatlabel import FlatLabel
 from kivy.vector import Vector
 from math import atan2, degrees
 import re
